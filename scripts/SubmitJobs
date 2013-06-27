@@ -1,0 +1,10 @@
+#!/bin/csh -f 
+
+setenv TCLFILE $1
+
+setenv tclInputFile kstarMCTcl/$TCLFILE.tcl
+setenv logFileName scratch/log/$TCLFILE.log
+
+bsub -q kanga -o $logFileName K0LMiniUser $tclInputFile
+
+#EOF 

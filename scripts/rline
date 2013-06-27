@@ -1,0 +1,17 @@
+#! /usr/local/bin/perl
+
+if (@ARGV) {
+   $jobnames = shift;
+}
+else {
+    $jobnames = "/u/rd/pellicci/.jobnames";
+}
+
+open(NAME,"$jobnames");
+while (<NAME>) { 
+    rand($.) < 1 && ($jobname = $_); 
+}
+chop $jobname;
+close NAME;
+($job, $rest) = split(/\#/, $jobname, 2);
+print "$job\n";

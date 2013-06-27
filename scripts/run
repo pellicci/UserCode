@@ -1,0 +1,219 @@
+#! /usr/local/bin/perl
+
+#  run -q bfobjy -o sx-072402 -w 50 ../bin/Linux2/IslBrecoilUserApp ../IslBRecoilUser/islNew.tcl tcl/*.tcl
+#  run -q bfobjy -o rfbc-110901 -k ~/d/kanga/sx-110901 PARENT/bin/Linux2/RooFromBdbConverter ../RooModules/RooFromBdbConverter.tcl dc*.tcl
+#
+#
+# History   04/14/00  First shot
+# -------             much history lost
+#           05/05/01  -c resubmit only crashed jobs
+#           06/23/01  -G
+#           09/06/01  -o 
+#           02/04/02  added semi-exclusive fix
+#           02/04/02  OO_FD_BOOT unmangling
+#           02/05/02  -b to enable OO_FD_BOOT setting
+#           02/08/02  analboot2 added to the recognized bootfiles
+#           02/12/02  -w to wait with job submission
+#           02/20/02  automatic gunzip for gzip'ed logfiles
+#           04/27/02  add -c to gunzip to leave gzip'ed logfiles intact
+#           07/24/02  modifications for old and new SP4, and the changing years of run 2
+# ----------------------------------------------------------------------
+# Send all questions, wishes and complaints to the 
+#
+# Author    Urs Langenegger <ursl@slac.stanford.edu>
+# ----------------------------------------------------------------------
+
+use Getopt::Std;
+getopts('bcdk:G:Ll:np:q:o:R:r:sw:');
+
+my $user    = $ENV{'USER'};
+my $scratch = "/afs/slac.stanford.edu/g/babar/work/p/pellicci/";
+my $crash   = 0;                 if ($opt_c) {$crash = 1;}         # -c   (re)submit only crashed jobs
+                                                                   # -d   gives just printouts, no submission of jobs
+
+                                                                   # -L   runs locally without '&'
+                                                                   # -n   puts the jobs into the background, reniced to 19
+my $logdir  = "$scratch/log";    if ($opt_l) {$logdir = $opt_l;}   # -l . where to put the output logfiles
+my $rootdir = "$scratch/output"; if ($opt_r) {$rootdir = $opt_r;}  # -r . where to put the output rootfiles
+my $resource= "";                if ($opt_R) {$resource = $opt_R;} # -R . resource to be requested from LSF (e.g. rh62 or rh72)  
+                                                                   # -o . is the unification of the above two options
+my $prefix  = "";                if ($opt_p) {$prefix = $opt_p;}   # -p . prefix to be added to the name of rootfiles and logfiles
+my $queue   = "kanga";           if ($opt_q) {$queue = $opt_q;}    # -q . which queue
+my $group   = "bla";             if ($opt_G) {$group = $opt_G;}    # -G . LSF group
+my $single  = 0;                 if ($opt_s) {$single = 1;}        # -s   no other tcl files (with coll names) are needed 
+my $wait    = 9999999;           if ($opt_w) {$wait = $opt_w;}     # -w . if more than $opt_w jobs are pending, wait with submission
+
+# -- Create directories if not yet existent
+if ($opt_o) {
+    $logdir = "$logdir/$opt_o";
+    $rootdir = "$rootdir/$opt_o";
+}
+
+
+# -- The following is NOT good, but probably the most ergonomic
+my $exe = shift;
+
+#unless ($opt_s) {$steerfile = shift;}
+$| = 1;
+select STDOUT;
+
+#if ($ENV{'NEVT'}) {
+#    die "NEVT is set. unsetenv it first ... \n"; 
+#}
+
+my $totcrashed = 0;
+my $totsuccess = 0;
+my $totrunning = 0;
+my $totnoutput = 0;
+
+my $subJobs = 0; 
+my $totalJobs = $#ARGV;
+my $totSubJobs = 0;
+foreach $tclfile (@ARGV) {
+    # -- Cut off trailing extension and possible directories in front
+    ($barefile = $tclfile) =~ s/\.tcl//g;
+    $rest = substr($barefile, 0, rindex($barefile, '/')+1); 
+    $barefile =~ s/$rest//;
+
+    $rootfile = "$prefix"."$barefile".".root";
+    $logfile = "$prefix"."$barefile".".log";
+
+    # -- at most $wait jobs should be pending, so before submitting more jobs, check that enough have been processed
+  retry: 
+    if ($subJobs > $wait) {
+	my @jobs = `/usr/local/bin/bjobs -u $user -q $queue -p | /bin/grep PEND`;
+	my $pendJobs = $#jobs;
+	if ($pendJobs > $wait) {
+	    my $datum = `/bin/date`; chop $datum;
+	    print "total: $totalJobs, submitted: $totSubJobs, limit: $wait, pending: $pendJobs ($datum)\n";
+	    sleep 600;
+	    goto retry;
+	} else {
+	    $subJobs = 0;
+	}
+	
+    }
+
+    if ($crash) {
+	if ((-e "$logdir/$logfile") || (-e "$logdir/$logfile.gz")) {
+	    my $zip = 0;
+	    if (-e "$logdir/$logfile") {
+		open(IN, "$logdir/$logfile") || die "Cannot open $logdir/$logfile\n";
+	    } else {
+		open(IN, "gunzip -c $logdir/$logfile |") || die "Cannot open $logdir/$logfile\n";
+		$zip = 1;
+	    }
+	    $redo = -1;
+	    while (<IN>) {
+		if (/Exited with exit code ([0-9]{3})\./ || /Exited/) {
+		    $redo = 1;
+		    print "Exited with exit code $1: $logdir/$logfile -- resubmitting \n";
+		    $totcrashed++;
+		    last;
+		} elsif (/total number of events=0/) {
+		    $redo = 1;
+		    print "Ran over 0 events: $logdir/$logfile -- resubmitting \n";
+		    $totcrashed++;
+		    last;
+		} elsif (/\(not found\) collection/) {
+		    $redo = 1;
+		    print "Problems with input collections: $logdir/$logfile -- resubmitting \n";
+		    $totcrashed++;
+		    last;
+		} elsif (/Successfully completed/) {
+		    $redo = 0;
+		    $totsuccess++;
+		    if ($zip == 1) {
+			print "Successfully completed $logdir/$logfile.gz \n";
+		    } else {
+			print "Successfully completed $logdir/$logfile \n";
+		    }
+		    last;
+		}		    
+	    }
+	    if ($redo == -1)  {
+		$totrunning++;
+		print "Still running: $logdir/$logfile  \n";
+		next;
+	    }
+
+	} else {
+	    $totnoutput++;
+	    print "No output file for $tclfile\n";
+	    $redo = 1;
+	}
+
+	if ($redo == 0) {
+	    next;
+	}
+    }
+
+    if ($opt_L) {
+	print "Running $tclfile: \n";
+    }
+    else {
+	print "Submitting $tclfile: ";
+    }
+
+    if ($opt_s) {
+	$steerfile = $tclfile;
+    }
+
+    $ENV{'PIDDBINPUT'}      = $tclfile;
+    $ENV{'CHARMLESSDBINPUT'}    = $tclfile;
+
+    $ENV{'ROOTFILE'}        = "$rootdir/$rootfile";
+
+
+    if ($opt_d) {
+	print "\n Logfile       = $logdir/$logfile \n";
+	if ($opt_L) {
+	    print "$exe $tclfile > $logdir/$logfile 2> $logdir/$logfile.err\n";
+	}
+	else {
+	    print "/usr/local/bin/bsub -C 0 -J `/u/rd/pellicci/rline` -q $queue -o $logdir/$logfile $exe $tclfile\n";
+	}
+    }
+    else {
+	if ($opt_L) {
+	    if (!$opt_o) {
+		system("$exe $tclfile");
+	    } else {
+		if ($opt_n) {
+		    print "output to appear in $logdir/$logfile \n";
+		    system("nice -19 $exe $tclfile > $logdir/$logfile 2> $logdir/$logfile.err &");
+		} else {
+		    print "output to appear in $logdir/$logfile \n";
+		    system("$exe $tclfile > $logdir/$logfile 2> $logdir/$logfile.err");
+		}
+	    }
+	}
+	else {
+	    $totSubJobs++;
+	    $subJobs++;
+	    if ($opt_G) { 
+		if ($opt_R) {
+		    system("/usr/local/bin/bsub -C 0 -J `/u/rd/pellicci/rline` -R $resource -q $queue -G $group -o $logdir/$logfile $exe $tclfile");
+		} else {
+		    system("/usr/local/bin/bsub -C 0 -J `/u/rd/pellicci/rline` -q $queue -G $group -o $logdir/$logfile $exe $tclfile");
+		}
+	    } else {
+		if ($opt_R) {
+		    system("/usr/local/bin/bsub -C 0 -J `/u/rd/pellicci/rline` -R $resource -q $queue -o $logdir/$logfile $exe $tclfile");
+		} else {
+		    system("/usr/local/bin/bsub -C 0 -J `/u/rd/pellicci/rline` -q $queue -o $logdir/$logfile $exe $tclfile");
+		}
+	    }
+	}
+    }
+}
+
+if ($totsuccess + $totrunning + $totcrashed + $totnoutput > 0) {
+    print "----------------------------------------------------------------------\n";
+    print "Summa summarum: \n";
+    print "--------------- \n";
+    print "no output:     $totnoutput\n";
+    print "successful:    $totsuccess\n";
+    print "crashed:       $totcrashed\n";
+    print "still running: $totrunning\n";
+}
