@@ -1,0 +1,51 @@
+/*****************************************************************************
+ * Package: CharmDalitzFit                                                   *
+ *    File: $Id: RooPoly.rdl,v 1.3 2008/06/10 17:08:26 pellicci Exp $
+ * Authors:                                                                  *
+ *   MP, Mario Pelliccioni, Univ Torino, pellicci@slac.stanford.edu          *
+ *****************************************************************************/
+#ifndef ROO_POLY
+#define ROO_POLY
+
+#include "RooFitCore/RooAbsPdf.hh"
+#include "RooFitCore/RooRealProxy.hh"
+
+class RooPoly : public RooAbsPdf {
+public:
+  RooPoly(const char *name, const char *title, RooAbsReal& _m12, RooAbsReal& _m13,
+	  RooAbsReal& _a1, RooAbsReal& _a2, RooAbsReal& _a3,
+	  RooAbsReal& _a4, RooAbsReal& _a5, RooAbsReal& _a6,
+	  RooAbsReal& _a7, RooAbsReal& _a8, RooAbsReal& _a9);
+  RooPoly(const RooPoly& other, const char* name=0) ;
+  virtual TObject* clone(const char* newname) const { return new RooPoly(*this,newname); }
+  inline virtual ~RooPoly() { };
+
+protected:
+  
+  RooRealProxy m12 ;
+  RooRealProxy m13 ;  
+  RooRealProxy a1,a2,a3,a4,a5,a6,a7,a8,a9;
+  
+  Double_t evaluate() const ;  
+
+private:
+  Bool_t inDalitz(Double_t mass12, Double_t mass13) const;
+
+  ClassDef(RooPoly,0) // BenDalitz PDF
+};
+
+#endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+

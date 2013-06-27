@@ -1,0 +1,102 @@
+ /****************************************************************************
+ * Project: Kpipipdf                                                         *
+ * Package: CharmDalitzFit                                                   *
+ *    File: $Id: RooTimepdf3pi.rdl,v 1.3 2008/06/11 21:03:50 pellicci Exp $    *
+ * Authors:                                                                  *
+ *   MP, Mario Pelliccioni, Univerista di Torino, pellicci@slac.stanford.edu *
+ *   GC, Gianluca Cavoto, Universita di Roma, cavoto@slac.stanford.edu       *
+ *                                                                           *
+ * Copyright (c) 2000-2002, Regents of the University of California          *
+ *                          and Stanford University. All rights reserved.    *
+ *                                                                           *
+ *****************************************************************************/
+
+#ifndef ROO_TIMEPDF3PI
+#define ROO_TIMEPDF3PI
+
+#include "RooFitCore/RooAbsAnaConvPdf.hh"
+#include "RooFitCore/RooRealProxy.hh"
+#include "RooFitCore/RooListProxy.hh"
+#include "RooFitCore/RooArgList.hh"
+#include "RooFitCore/RooRealVar.hh"
+#include "RooFitCore/RooAbsReal.hh"
+
+#include "EvtGenBase/EvtDalitzPlot.hh"
+#include "EvtGenBase/EvtComplex.hh"
+
+#include "CharmDalitzFit/RooIsobar3Pi.hh"
+
+class RooTimepdf3pi : public RooAbsAnaConvPdf {
+public:
+
+  inline RooTimepdf3pi() { }
+
+  RooTimepdf3pi(const char *name, const char *title, RooRealVar& d0Lifetime, RooAbsReal& m13, RooAbsReal& m23, const RooResolutionModel& model,
+	     EvtDalitzPlot* dalitzSpace, RooAbsReal& tau, RooAbsReal& qp, RooAbsReal& phi, RooAbsReal& c1, RooAbsReal& c2, RooAbsReal& c3,
+	     const int D0flav, const string dirname);
+
+  RooTimepdf3pi(const RooTimepdf3pi& other, const char* name=0) ;
+  virtual TObject* clone(const char* newname) const { return new RooTimepdf3pi(*this,newname); }
+  inline virtual ~RooTimepdf3pi() { };
+
+  inline RooIsobar3Pi* getManager() const {return Apdf;}
+
+  virtual double coefficient(int basisIndex) const ;
+
+  // Normalization
+  virtual int getCoefAnalyticalIntegral(int coeff, RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const;
+  virtual double coefAnalyticalIntegral(int coef, int code, const char* rangeName=0) const;
+
+  // Generator
+  int getGenerator(const RooArgSet& directVars, RooArgSet &generateVars, Bool_t staticInitOK=kTRUE) const;
+  void initGenerator(int code) ;
+  void generateEvent(int code) ;
+  void genLifetime();
+
+  inline double myevaluate() const {return evaluate();}
+
+  inline int my_plusExp() const {return _plusExp;}
+  inline int my_minusExp() const {return _minusExp;}
+  inline int my_cosExp() const {return _cosExp;}
+  inline int my_sinExp() const {return _sinExp;}
+
+protected:
+
+  void getNormarray();
+  EvtComplex getI1() const;
+  RooRealProxy _d0Lifetime ;
+  RooRealProxy _m13 ;
+  RooRealProxy _m23 ;
+  RooRealProxy _tau;
+  RooRealProxy _qp;
+  RooRealProxy _phi;
+  RooRealProxy _c1;
+  RooRealProxy _c2;
+  RooRealProxy _c3;
+
+  int _plusExp;
+  int _minusExp;
+  int _cosExp;
+  int _sinExp;
+  
+  RooIsobar3Pi *Apdf;
+  RooIsobar3Pi *Abarpdf;
+  int nResA;
+  EvtComplex normarray[19][19];
+  int _D0flav;
+
+  double _x, _y;
+
+  RooListProxy* _prxyList;
+  RooArgList* obsList;
+
+  EvtDalitzPlot *_dalitzSpace;
+
+  double sampleEvent();
+  double sampleEvent_t();
+  int _totGen, _badGen;
+
+  ClassDef(RooTimepdf3pi,0) // Signal PDF
+};
+
+#endif

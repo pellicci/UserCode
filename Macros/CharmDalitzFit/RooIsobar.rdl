@@ -1,0 +1,113 @@
+/*****************************************************************************
+ * Project: BaBar detector at the SLAC PEP-II B-factory
+ * Package: CharmDalitzFit
+ *    File: $Id: RooIsobar.rdl,v 1.26 2008/06/10 17:08:25 pellicci Exp $
+ * Authors:
+ *   Mario Pelliccioni, pellicci@slac.stanford.edu
+ *
+ *****************************************************************************/
+
+#ifndef __ROO_ISOBAR_HH__
+#define __ROO_ISOBAR_HH__
+
+#include<vector>
+
+#include "RooFitCore/RooRealVar.hh"
+#include "RooFitCore/RooArgList.hh"
+#include "RooFitCore/RooDataSet.hh"
+
+#include "EvtGenBase/EvtSpinType.hh"
+#include "EvtGenBase/EvtCyclic3.hh"
+#include "EvtGenBase/EvtPto3PAmp.hh"
+#include "EvtGenBase/EvtDalitzPlot.hh"
+#include "EvtGenBase/EvtDalitzPoint.hh"
+#include "EvtGenBase/EvtComplex.hh"
+
+class RooIsobar {
+
+public:
+
+  RooIsobar(const Int_t D0flav, const Int_t isWS, EvtDalitzPlot *dalitzSpace, const string dirname);
+  inline virtual ~RooIsobar() {};
+  
+  inline void getFileName(char int_name[50]) const;
+  virtual Double_t getNormalization() const;
+  virtual void calNorm();
+  inline RooArgList* getObsList( void ) { return _obs_list ; }
+
+  EvtComplex getamp(const EvtDalitzPoint *point) const;
+  EvtComplex ResAmp(const EvtDalitzPoint *point, const Int_t i) const;
+  EvtComplex efficiency(const EvtDalitzPoint *point) const;
+  void helicityangle(RooDataSet *data) const;
+  Double_t pionCMmom(const Double_t s, const Double_t m1, const Double_t m2) const;
+  EvtComplex LASS(const EvtDalitzPoint *point, const Int_t i) const;
+  Double_t getamp_tanPhase(const EvtDalitzPoint *point) const;
+
+  RooRealVar* _massRes[17];
+  RooRealVar* _gammRes[17];
+  EvtSpinType::spintype _spinRes[17];
+  TString _nameRes[17];
+  EvtCyclic3::Pair _trackinfo[17];
+  RooRealVar* _ampRes[17];
+  RooRealVar* _phaseRes[17];
+  EvtPto3PAmp::NumType _typeRes[17];
+  EvtDalitzPlot *_dalitzSpace;
+
+  RooRealVar* _aLASS[3];
+  RooRealVar* _rLASS[3];
+  RooRealVar* _RLASS[3];
+  RooRealVar* _BLASS[3];
+  RooRealVar* _phiRLASS[3];
+  RooRealVar* _phiBLASS[3];
+
+  inline Int_t getnRes() {return nRes;}
+  inline Double_t getMass(Int_t ires) {return _massRes[ires]->getVal();}
+  inline Double_t getGamma(Int_t ires) {return _gammRes[ires]->getVal();}
+  inline RooRealVar* getAmpRes(Int_t ires) {return _ampRes[ires];}
+  inline RooRealVar* getPhaseRes(Int_t ires) {return _phaseRes[ires];}
+  inline EvtSpinType::spintype getType(Int_t ires) {return _spinRes[ires];};
+  inline EvtCyclic3::Pair getPair(Int_t ires) {return _trackinfo[ires];};
+
+protected:
+
+  Int_t _D0flav, _isWS;
+  Double_t _pi;
+  EvtComplex *normarray[17][17];
+  Int_t ndiv_eff;
+  Double_t mA, mB, mC;
+  Int_t nRes;
+  string name;
+
+  void initResonance();
+  void getNormvalues();
+  void readefficiency();
+
+  inline Double_t getm23(const Double_t m12, const Double_t m13) const
+  {return pow(_dalitzSpace->bigM(),2) + pow(_dalitzSpace->mA(),2) + pow(_dalitzSpace->mB(),2) + pow(_dalitzSpace->mC(),2) - m12 - m13;}
+
+private:
+
+  //Gounaris-Sakurai parametrization for rho...
+  EvtComplex GSBW(const Double_t m12, const Double_t m13, const Int_t i) const;
+  Double_t fsFun(const Double_t s, const Double_t m2, const Double_t gam) const;
+  Double_t hFun(const Double_t s) const;
+  Double_t dh_dsFun(const Double_t s) const;
+  Double_t dFun(const Double_t s) const;
+  Double_t runningWidth(const Double_t s, const Int_t i) const;
+
+  //efficiency parametrization
+  vector< RooRealVar* > _n0;
+  vector< RooRealVar* > _n1;
+  vector< RooRealVar* > _c1;
+  vector< RooRealVar* > _c2;
+  vector< RooRealVar* > _c3;
+  vector< RooRealVar* > _c4;
+  vector< RooRealVar* > _c5;
+
+  RooArgList* _obs_list;
+  
+  ClassDef(RooIsobar,1)
+
+};
+
+#endif

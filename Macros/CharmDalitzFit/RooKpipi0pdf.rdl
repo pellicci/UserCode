@@ -1,0 +1,67 @@
+ /****************************************************************************
+ * Project: Kpipipdf                                                         *
+ * Package: CharmDalitzFit                                                   *
+ *    File: $Id: RooKpipi0pdf.rdl,v 1.16 2009/08/24 08:47:33 pellicci Exp $    *
+ * Authors:                                                                  *
+ *   MP, Mario Pelliccioni, Univerista di Torino, pellicci@slac.stanford.edu *
+ *   GC, Gianluca Cavoto, Universita di Roma, cavoto@slac.stanford.edu       *
+ *                                                                           *
+ * Copyright (c) 2000-2002, Regents of the University of California          *
+ *                          and Stanford University. All rights reserved.    *
+ *                                                                           *
+ *****************************************************************************/
+
+#ifndef ROO_KPIPI0PDF
+#define ROO_KPIPI0PDF
+
+#include <RooAbsPdf.h>
+#include <RooRealProxy.h>
+#include <RooListProxy.h>
+#include "CharmDalitzFit/RooIsobar.hh"
+#include "EvtGenBase/EvtDalitzPlot.hh"
+
+class RooRealVar;
+
+class RooKpipi0pdf : public RooAbsPdf {
+public:
+
+  RooKpipi0pdf(const char *name, const char *title, RooAbsReal& m12, RooAbsReal& m13, EvtDalitzPlot *dalitzSpace, const string name, Int_t isD0 = -1);
+  RooKpipi0pdf(const RooKpipi0pdf& other, const char* name=0) ;
+  virtual TObject* clone(const char* newname) const { return new RooKpipi0pdf(*this,newname); }
+  inline virtual ~RooKpipi0pdf() { };
+  
+  inline RooIsobar* getManager() const {return _dpManager;}
+
+  Int_t getAnalyticalIntegral(RooArgSet& allVars, RooArgSet& analVars, const char* rangeName=0) const ;
+  Double_t analyticalIntegral(Int_t code,const char* rangeName=0) const ;
+
+  // Generator
+  Int_t getGenerator(const RooArgSet& directVars, RooArgSet &generateVars, Bool_t staticInitOK=kTRUE) const;
+  void initGenerator(Int_t code) ;
+  void generateEvent(Int_t code) ;
+  
+protected:
+
+  RooRealProxy _m12 ;
+  RooRealProxy _m13 ;
+
+  RooListProxy* _prxyList;
+  RooIsobar* _dpManager;
+
+  EvtDalitzPlot *_dalitzSpace;
+  Double_t _pdfmax;
+  Double_t sampleEvent();
+
+  inline Double_t getm23() const
+  {return pow(_dalitzSpace->bigM(),2) + pow(_dalitzSpace->mA(),2) + pow(_dalitzSpace->mB(),2) + pow(_dalitzSpace->mC(),2) - _m12 - _m13;}
+
+  RooArgList* obsList;
+  
+  Double_t evaluate() const ;  
+
+private:
+
+  ClassDef(RooKpipi0pdf,0) // Signal PDF
+};
+
+#endif

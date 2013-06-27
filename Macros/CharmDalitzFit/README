@@ -1,0 +1,41 @@
+=============================================================
+
+                >>>   CharmDalitzFit   <<<
+
+ Creation of RooFit PDFs for Dalitz plot analyses.
+
+ Autors: Mario Pelliccioni, pellicci@slac.stanford.edu
+         Gianluca Cavoto, cavoto@slac.stanford.edu
+
+=============================================================
+
+Instructions to get the packet ready to work:
+
+- standard RooFit:
+
+	This package is using ROOT5 and the boundled roofit v2.09 version.
+	Too learn how to implement root5 in babar, see
+
+	http://babar-hn.slac.stanford.edu:5090/HyperNews/get/roothelp/1267.html
+
+- EvtGenBase:
+
+        addpkg EvtGenBase HEAD
+        cd EvtGenBase
+        # create a dummy file Experiment/Experiment.hh
+        mkdir Experiment; echo '//dummy//' > Experiment/Experiment.hh;
+        gmake -f GNUmakefile_standalone.mk
+
+- CharmDalitzFit:
+
+        cvs co -r HEAD CharmDalitzFit
+        gmake installdirs
+        gmake RooKkkTools.rootlib ROPT=-Shared
+
+*** Load libraries during ROOT startup - modify RooLogon.C
+
+  gSystem->Load("../EvtGenBase/tmp/libEvtGenBase");
+  gSystem->Load("libRooFit") ;
+  gSystem->Load("libCharmDalitzFit") ;
+
+  using namespace RooFit ;
