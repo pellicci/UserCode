@@ -1,2 +1,0 @@
-./CreaOutputeosDir crab_runDTOfflineAnalysis_r$1.cfg
-crab -create -submit -cfg crab_runDTOfflineAnalysis_r$1.cfg
