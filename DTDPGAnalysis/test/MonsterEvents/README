@@ -1,0 +1,16 @@
+A more detailed description might follow in the future. For the time
+being this directory contains only the following three files:
+
+* MonsterEventsInspector.[h,C]: Holds the description and
+  implementation of class that provides the functionallity to 
+  + read a ROOT file storing the instantaneous luminosity at certain
+    intervals with the information on which fill it was produced
+  + read and store the monster events from a text file
+  + Correlate both informations
+
+* RunTest.C: Implements a ROOT macro that uses the previous class to
+  read the monster events and, by iterating over them, construct a few
+  interesting histograms.
+
+All files are quite commented. Please contact Isidro Gonzalez
+Caballero if you have questions on this code.

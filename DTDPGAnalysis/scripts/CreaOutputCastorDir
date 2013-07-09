@@ -1,0 +1,26 @@
+#!/bin/sh -f
+rm -f "creaCastorDir"
+exec grep -i user_remote_dir $@ |  awk ' 
+BEGIN { esc="^[[" }
+{
+ thedirectory=""
+ init = substr($1,1,15)
+ if (init=="user_remote_dir")
+ {
+   for(i=0;i<length($1);i++)
+   {
+     sl = substr($1,15+i,1)
+     if(sl=="/")
+     {
+        thedirectory= "/castor/cern.ch"substr($1,15+i)
+        print "rfmkdir " thedirectory >> "creaCastorDir" 
+        break
+     }
+   }
+ }
+ if(length(thedirectory)>1)
+    print "Creating directory:   " thedirectory 
+}'
+
+ source creaCastorDir
+

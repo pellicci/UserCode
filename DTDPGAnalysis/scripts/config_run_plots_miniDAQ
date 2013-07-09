@@ -1,0 +1,2 @@
+./configureDQMPlotter.sh $1 /eos/cms/store/caf/user/marycruzb/PromptOffline/miniDAQ/DQMDTRun$1
+

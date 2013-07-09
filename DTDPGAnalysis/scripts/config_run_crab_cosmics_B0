@@ -1,0 +1,1 @@
+less  crab_runDTOfflineAnalysis_template_cosmics_B0T.cfg | sed -e "s?INSERTRUN?$1?g"  >  crab_runDTOfflineAnalysis_r$1.cfg

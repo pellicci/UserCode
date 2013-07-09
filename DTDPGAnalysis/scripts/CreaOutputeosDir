@@ -1,0 +1,34 @@
+#!/bin/sh -f
+rm -f "creaCastorDir"
+rm -f "creaCastorDir0"
+exec grep -i user_remote_dir $@ |  awk ' 
+BEGIN { esc="^[[" }
+{
+ thedirectory=""
+ init = substr($1,1,15)
+ if (init=="user_remote_dir")
+ {
+   for(i=0;i<length($1);i++)
+   {
+     sl = substr($1,15+i,1)
+     if(sl=="/")
+     {
+        ##thedirectory= "/castor/cern.ch"substr($1,15+i)
+        ##print "rfmkdir " thedirectory >> "creaCastorDir2" 
+        ##thedirectory= "/eos/cms/store/caf/user/"$theuser"/"substr($1,2+i)
+        thedirectory="/"substr($1,2+i)
+        print thedirectory >> "creaCastorDir0" 
+        break
+     }
+   }
+ }
+## if(length(thedirectory)>1)
+##    print "Creating directory:   " thedirectory 
+}'
+theuser=`whoami`
+thenewdir=`cat creaCastorDir0`
+echo "/afs/cern.ch/project/eos/installation/pro/bin/eos.select mkdir /eos/cms/store/caf/user/"$theuser$thenewdir  >> "creaCastorDir" 
+echo "Creating directory:   /eos/cms/store/caf/user/"$theuser$thenewdir 
+
+ source creaCastorDir
+

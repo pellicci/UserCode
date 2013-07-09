@@ -1,0 +1,1 @@
+less  crab_runDTOfflineAnalysis_template_preLHC.cfg | sed -e "s?INSERTRUN?$1?g"  >  crab_runDTOfflineAnalysis_r$1.cfg

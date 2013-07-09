@@ -1,0 +1,3 @@
+#####./configureDQMPlotter.sh $1 /castor/cern.ch/user/a/afanfani/DQMCRAFT/DQMDTRun$1
+./configureDQMPlotter.sh $1 /eos/cms/store/caf/user/marycruzb/PromptOffline/Express/DQMDTRun$1
+

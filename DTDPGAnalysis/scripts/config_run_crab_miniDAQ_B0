@@ -1,0 +1,1 @@
+less  crab_runDTOfflineAnalysis_template_MiniDAQ_B0.cfg | sed -e "s?INSERTRUN?$1?g"  >  crab_runDTOfflineAnalysis_r$1.cfg
