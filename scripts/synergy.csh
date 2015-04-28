@@ -1,0 +1,1 @@
+synergyc lxcms02
