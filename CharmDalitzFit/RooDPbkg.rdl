@@ -1,0 +1,72 @@
+/*****************************************************************************
+ * Project: BaBar detector at the SLAC PEP-II B-factory
+ * Package: CharmDalitzFit
+ *    File: $Id: RooDPbkg.rdl,v 1.12 2008/06/10 17:08:25 pellicci Exp $
+ * Authors:
+ *   MP, Pelliccioni Mario, Univ Torino, pellicci@slac.stanford.edu
+ *****************************************************************************/
+
+#ifndef __ROO_DPBKG_HH__
+#define __ROO_DPBKG_HH__
+
+#include<vector>
+#include "RooFitCore/RooAbsArg.hh"
+#include "RooFitCore/RooRealVar.hh"
+#include "RooFitCore/RooArgList.hh"
+#include "EvtGenBase/EvtSpinType.hh"
+#include "EvtGenBase/EvtCyclic3.hh"
+#include "EvtGenBase/EvtDalitzPlot.hh"
+#include "EvtGenBase/EvtDalitzPoint.hh"
+#include "EvtGenBase/EvtComplex.hh"
+
+class EvtComplex;
+
+class RooDPbkg {
+public:
+  RooDPbkg(EvtDalitzPlot *dalitzSpace);
+  inline virtual ~RooDPbkg(){};
+
+  virtual Double_t getNormalization() const;
+  Double_t getamp(const EvtDalitzPoint *point) const;
+
+  inline RooArgList* getObsList( void ) const { return _obs_list ; }
+
+  protected:
+
+  private:
+
+  Int_t nRes;
+  RooArgList* _obs_list;
+  vector< EvtSpinType::spintype > _spinRes;
+  vector< EvtCyclic3::Pair > _trackinfo;
+  EvtDalitzPlot *_dalitzSpace;
+
+  vector< TString > _nameRes;  
+  vector< RooRealVar* > _ampRes;
+  vector< RooRealVar* > _mRes;
+  vector< RooRealVar* > _widthRes;
+
+  RooRealVar* _a1;
+  RooRealVar* _a2;
+  RooRealVar* _a3;
+  RooRealVar* _a4;
+  RooRealVar* _a5;
+  RooRealVar* _a6;
+  RooRealVar* _a7;
+  RooRealVar* _a8;
+  RooRealVar* _a9;
+  RooRealVar* _fra;
+
+  void initResonance();
+  EvtComplex ResAmp(const EvtDalitzPoint *point, const Int_t i) const;
+
+  inline Double_t getm23(const Double_t m12, const Double_t m13) const
+  {return pow(_dalitzSpace->bigM(),2) + pow(_dalitzSpace->mA(),2) + pow(_dalitzSpace->mB(),2) + pow(_dalitzSpace->mC(),2) - m12 - m13;}
+
+  ClassDef(RooDPbkg,1)
+
+
+};
+
+#endif
+
