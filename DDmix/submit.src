@@ -1,0 +1,15 @@
+#!/bin/csh
+
+set start = 1
+set stop  = 100
+@ stop = $stop + 1
+
+while ( $start < $stop )
+#\rm ciccio.src
+bsub -q long -o out/noKpipi0_$start.log ./DDmix out/DDmix_noKpipi0-$start.root
+@ start = $start + 1
+end
+
+
+
+
