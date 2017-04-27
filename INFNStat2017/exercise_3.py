@@ -48,12 +48,8 @@ pl_Interval = plc.GetInterval()
 #We could use the standard Bayesian Calculator, but this would be very slow for the integration
 #So we profit of the Markov-Chain MC capabilities of RooStats to speed things up
 
-#Specify the proposal function
-sp = ROOT.RooStats.SequentialProposal(0.1)
-
 mcmc = ROOT.RooStats.MCMCCalculator(ws.data("data") , model)
 mcmc.SetConfidenceLevel(confidenceLevel)
-mcmc.SetProposalFunction(sp)
 mcmc.SetNumIters(20000)           #Metropolis-Hastings algorithm iterations
 mcmc.SetNumBurnInSteps(100)       #first N steps to be ignored as burn-in
 mcmc.SetLeftSideTailFraction(0.5) #for central interval

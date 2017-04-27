@@ -26,7 +26,7 @@ sbModel.SetWorkspace(ws)
 sbModel.SetPdf("totPDF")
 sbModel.SetName("S+B Model")
 poi = ROOT.RooArgSet(ws.var("Npsi"))
-poi.find("Npsi").setRange(0.,20.);  #this is mostly for plotting
+poi.find("Npsi").setRange(0.,20.)  #this is mostly for plotting
 sbModel.SetParametersOfInterest(poi)
 
 bModel = sbModel.Clone()
@@ -71,7 +71,7 @@ poimax = poi.find("Npsi").getMax()
 print "Doing a fixed scan  in interval : ", poimin, " , ", poimax
 calc.SetFixedScan(npoints,poimin,poimax);
 
-result = calc.GetInterval() #This is a HypoTestInveter class object
+result = calc.GetInterval() #This is a HypoTestInverter class object
 upperLimit = result.UpperLimit()
 
 #Example using the BayesianCalculator
