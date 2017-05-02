@@ -1,6 +1,6 @@
 import ROOT
 
-fInput = ROOT.TFile("DataSet.root")
+fInput = ROOT.TFile("DataSet_lowstat.root")
 dataset = fInput.Get("data")
 
 #The observable

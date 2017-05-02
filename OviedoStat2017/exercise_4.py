@@ -1,7 +1,7 @@
 
 import ROOT
 
-#Open the rootfile and get the workspace from the exercise_0_p1
+#Open the rootfile and get the workspace from the exercise_0
 fInput = ROOT.TFile("Workspace_mumufit.root")
 ws = fInput.Get("ws")
 ws.Print()
@@ -48,10 +48,8 @@ pl_Interval = plc.GetInterval()
 #So we profit of the Markov-Chain MC capabilities of RooStats to speed things up
 
 #Specify the proposal function
-sp = ROOT.RooStats.SequentialProposal(0.1)
 mcmc = ROOT.RooStats.MCMCCalculator(ws.data("data") , model)
 mcmc.SetConfidenceLevel(confidenceLevel)
-mcmc.SetProposalFunction(sp)
 mcmc.SetNumIters(20000)           #Metropolis-Hastings algorithm iterations
 mcmc.SetNumBurnInSteps(100)       #first N steps to be ignored as burn-in
 mcmc.SetLeftSideTailFraction(0.5) #for central interval

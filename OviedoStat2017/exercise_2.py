@@ -16,7 +16,7 @@ model.SetWorkspace(ws)
 model.SetPdf("totPDF")
 
 #Here we explicitly set the value of the parameters for the null hypothesis
-#We want no signal contribution, eg. Nsig = 0
+#We want no signal contribution, so cross_psi = 0
 cross_psi = ws.var("cross_psi")
 poi = ROOT.RooArgSet(cross_psi)
 nullParams = poi.snapshot()
