@@ -1,4 +1,3 @@
-
 import ROOT
 
 #Open the rootfile and get the workspace from the exercise_0
@@ -77,3 +76,6 @@ dataCanvas.SaveAs("exercise_3.png")
 print "PLC interval is [", pl_Interval.LowerLimit(meanpsi2S), ", ", pl_Interval.UpperLimit(meanpsi2S), "]"
 
 print "Bayesian interval is [", MCMC_interval.LowerLimit(meanpsi2S), ", ", MCMC_interval.UpperLimit(meanpsi2S), "]"
+
+#PyROOT sometimes fails cleaning memory, this helps
+del plc

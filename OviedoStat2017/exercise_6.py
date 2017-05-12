@@ -26,6 +26,7 @@ lumi_psi = ws.var("lumi_psi")
 eff_psi = ws.var("eff_psi")
 Nbkg = ws.var("Nbkg")
 
+
 #Set the RooModelConfig and let it know what the content of the workspace is about
 model = ROOT.RooStats.ModelConfig()
 model.SetWorkspace(ws)
@@ -136,3 +137,7 @@ plot_Interval_nuis.SetContourColor(ROOT.kRed)
 plot_Interval_nuis.Draw("SAME")
 
 dataCanvas.SaveAs("exercise_6.png")
+
+#PyROOT sometimes fails cleaning memory, this helps
+del plc
+del plc_nuis

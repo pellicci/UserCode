@@ -78,3 +78,5 @@ dataCanvas.SaveAs("exercise_5.png")
 print "PLC interval is [", pl_Interval.LowerLimit(meanpsi2S), ", ", pl_Interval.UpperLimit(meanpsi2S), "]"
 
 print "Bayesian interval is [", MCMC_interval.LowerLimit(meanpsi2S), ", ", MCMC_interval.UpperLimit(meanpsi2S), "]"
+
+del plc

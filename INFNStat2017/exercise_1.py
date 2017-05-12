@@ -1,9 +1,9 @@
-
 import ROOT
 
 #Open the rootfile and get the workspace from the exercise_0
 fInput = ROOT.TFile("Workspace_mumufit.root")
 ws = fInput.Get("ws")
+
 ws.Print()
 
 #You can set constant parameters that are known
@@ -33,7 +33,13 @@ plc.SetNullParameters(nullParams)
 #We get a HypoTestResult out of the calculator, and we can query it.
 htr = plc.GetHypoTest()
 
+#We get a HypoTestResult out of the calculator, and we can query it.
+htr = plc.GetHypoTest()
+
 print "-------------------------------------------------"
 print "The p-value for the null is ", htr.NullPValue()
 print "Corresponding to a signifcance of ", htr.Significance()
 print "-------------------------------------------------"
+
+#PyROOT sometimes fails cleaning memory, this helps
+del plc

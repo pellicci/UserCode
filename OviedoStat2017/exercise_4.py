@@ -47,7 +47,6 @@ pl_Interval = plc.GetInterval()
 #We could use the standard Bayesian Calculator, but this would be very slow for the integration
 #So we profit of the Markov-Chain MC capabilities of RooStats to speed things up
 
-#Specify the proposal function
 mcmc = ROOT.RooStats.MCMCCalculator(ws.data("data") , model)
 mcmc.SetConfidenceLevel(confidenceLevel)
 mcmc.SetNumIters(20000)           #Metropolis-Hastings algorithm iterations
@@ -77,3 +76,6 @@ dataCanvas.SaveAs("exercise_4.png")
 print "PLC interval is [", pl_Interval.LowerLimit(cross_psi), ", ", pl_Interval.UpperLimit(cross_psi), "]"
 
 print "Bayesian interval is [", MCMC_interval.LowerLimit(cross_psi), ", ", MCMC_interval.UpperLimit(cross_psi), "]"
+
+#PyROOT sometimes fails cleaning memory, this helps
+del plc

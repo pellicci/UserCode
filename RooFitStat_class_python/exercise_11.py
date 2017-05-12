@@ -43,22 +43,27 @@ print "The interval is [", interval.LowerLimit(mu), ", ", interval.UpperLimit(mu
 #No dedicated plotting class yet, so do it by hand:
 ROOT.gStyle.SetOptStat(0)
 
-parameterScan = fc.GetPointsToScan()
+parameterScan = fc.GetPointsToScan()    #this is a RooDataHist
 hist = parameterScan.createHistogram("mu",30)
 hist.GetXaxis().SetTitle("#mu")
+
+canvas = ROOT.TCanvas()
+canvas.cd()
 hist.Draw()
 
-tmpPoint = ROOT.RooArgSet()
+mark = []
 #Loop over points to test
 for i in range(parameterScan.numEntries()) :
     print "on parameter point ", i, " out of ", parameterScan.numEntries()
     #Get a parameter point from the list of points to test.
     tmpPoint = parameterScan.get(i).clone("temp")
 
-    mark = ROOT.TMarker(tmpPoint.getRealValue("mu"), 1, 25)
+    mark.append(ROOT.TMarker(tmpPoint.getRealValue("mu"), 1, 25))
     if (interval.IsInInterval(tmpPoint)):
-        mark.SetMarkerColor(ROOT.kBlue)
+        mark[i].SetMarkerColor(ROOT.kBlue)
     else:
-        mark.SetMarkerColor(ROOT.kRed)
+        mark[i].SetMarkerColor(ROOT.kRed)
 
-    mark.Draw("s")
+    mark[i].Draw("s")
+
+canvas.SaveAs("exercise_11.png")

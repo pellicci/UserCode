@@ -97,6 +97,7 @@ PDFtot_nuis_unconstr = ROOT.RooAddPdf("PDFtot_nuis_unconstr","PDFtot_nuis_uncons
 #Now add the gaussian constraint to the total PDF
 PDFtot_nuis = ROOT.RooProdPdf("PDFtot_nuis","PDFtot_nuis",ROOT.RooArgList(PDFtot_nuis_unconstr,constr_N))
 
+
 #We now have two PDFs:
 getattr(ws,'import')(PDFtot_nuis)
 
@@ -133,3 +134,7 @@ plot_Interval_nuis.SetContourColor(ROOT.kRed)
 plot_Interval_nuis.Draw("SAME")
 
 dataCanvas.SaveAs("exercise_4.png")
+
+#PyROOT sometimes fails cleaning memory, this helps
+del plc
+del plc_nuis
