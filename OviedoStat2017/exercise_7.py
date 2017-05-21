@@ -27,6 +27,7 @@ modelConfig.SetParametersOfInterest(parameters)
 modelConfig.SetObservables(ROOT.RooArgSet(x))
 w.Print()
 
+
 #Show use of Feldman-Cousins
 fc = ROOT.RooStats.FeldmanCousins(data,modelConfig)
 fc.SetTestSize(.05) #Set size of test
@@ -66,4 +67,7 @@ for i in range(parameterScan.numEntries()) :
 
     mark[i].Draw("s")
 
-canvas.SaveAs("exercise_11.png")
+canvas.SaveAs("exercise_7.png")
+
+#PyROOT sometimes fails cleaning memory, this helps
+del fc

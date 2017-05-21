@@ -86,7 +86,7 @@ bc = ROOT.RooStats.BayesianCalculator(ws.data("data"), sbModel)
 bc.SetConfidenceLevel(0.95)
 bc.SetLeftSideTailFraction(0.) # for upper limit
 
-bcInterval = bc.GetInterval();
+bcInterval = bc.GetInterval()
 
 #Now let's print the result of the two methods
 #First the CLs
@@ -119,3 +119,5 @@ freq_plot.Draw("2CL")
 dataCanvas.cd(2)
 bc_plot.Draw()
 dataCanvas.SaveAs("exercise_3.png")
+
+
