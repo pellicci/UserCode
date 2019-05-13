@@ -34,9 +34,7 @@ model.SetParametersOfInterest(poi)
 confidenceLevel = 0.68
 
 #Build the profile likelihood calculator
-plc = ROOT.RooStats.ProfileLikelihoodCalculator()
-plc.SetData(ws.data("data"))
-plc.SetModel(model)
+plc = ROOT.RooStats.ProfileLikelihoodCalculator(ws.data("data"), model)
 plc.SetParameters(poi)
 plc.SetConfidenceLevel(confidenceLevel)
 
@@ -46,7 +44,6 @@ pl_Interval = plc.GetInterval()
 #Now let's determine the Bayesian probability interval
 #We could use the standard Bayesian Calculator, but this would be very slow for the integration
 #So we profit of the Markov-Chain MC capabilities of RooStats to speed things up
-
 mcmc = ROOT.RooStats.MCMCCalculator(ws.data("data") , model)
 mcmc.SetConfidenceLevel(confidenceLevel)
 mcmc.SetNumIters(20000)           #Metropolis-Hastings algorithm iterations
@@ -70,7 +67,7 @@ plot_MCMC = ROOT.RooStats.MCMCIntervalPlot(MCMC_interval)
 plot_MCMC.SetTitle("Bayesian probability interval (Markov Chain)")
 plot_MCMC.Draw()
 
-dataCanvas.SaveAs("exercise_3.png")
+dataCanvas.SaveAs("exercise_4.png")
 
 #Now print the interval for mH for the two methods
 print "PLC interval is [", pl_Interval.LowerLimit(cross_psi), ", ", pl_Interval.UpperLimit(cross_psi), "]"
@@ -79,4 +76,3 @@ print "Bayesian interval is [", MCMC_interval.LowerLimit(cross_psi), ", ", MCMC_
 
 #PyROOT sometimes fails cleaning memory, this helps
 del plc
-
